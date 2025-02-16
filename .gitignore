@@ -1,0 +1,17 @@
+# 환경변수
+.env
+
+# Mac OS 특수 파일
+.DS_Store
+
+# __pycache__ 폴더 (Python 캐시 파일)
+__pycache__/
+
+# Python version 파일
+.python-version
+
+# 다른 별도 파일
+/predict_delay
+
+
+
