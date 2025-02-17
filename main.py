@@ -446,3 +446,63 @@ def get_passenger_data():
     if cached_passenger_data:
         return cached_passenger_data
     return {"error": "No cached data available"}
+
+###########################################################################################################################################################
+## 공항 기상 정보
+###########################################################################################################################################################
+
+# 응답 데이터 모델 정의
+class WeatherInfo(BaseModel):
+    date: str
+    title: str
+    summary: str
+    outlook: str
+    forecast: str
+    warn: str
+    sel_val1: str
+    sel_val2: str
+    sel_val3: str
+
+@app.get("/get_weather", response_model=WeatherInfo)
+def get_incheon_weather():
+    # 현재 시간 확인
+    current_time = datetime.now()
+    current_hour = current_time.hour
+
+    # base_time 결정 (17:00 지나면 1700, 아니면 0600)
+    base_time = '1700' if current_hour >= 17 else '0600'
+
+    # API 요청 URL 및 파라미터 설정
+    url = 'http://apis.data.go.kr/1360000/AirPortService/getAirPort'
+    params = {
+        'serviceKey': SERVICE_KEY,
+        'numOfRows': '1000',
+        'pageNo': '1',
+        'dataType': 'JSON',
+        'base_date': current_time.strftime('%Y%m%d'),  # 오늘 날짜
+        'base_time': base_time,  # 결정된 base_time
+        'airPortCd': 'RKSI'  # 인천공항 코드
+    }
+
+    # API 요청 및 응답 처리
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    # 응답 데이터 처리
+    if 'response' in data and 'body' in data['response']:
+        weather_info = data['response']['body']['items']['item'][0]
+
+        # 각 항목의 값이 비어있다면 적절히 처리
+        return WeatherInfo(
+            date=weather_info.get('tm', '정보 없음'),
+            title=weather_info.get('title', '정보 없음'),
+            summary=weather_info.get('summary', '정보 없음'),
+            outlook=weather_info.get('outlook', '정보 없음'),
+            forecast=weather_info.get('forecast', '정보 없음'),
+            warn=weather_info.get('warn', '정보 없음'),
+            sel_val1=weather_info.get('sel_val1', '정보 없음'),
+            sel_val2=weather_info.get('sel_val2', '정보 없음'),
+            sel_val3=weather_info.get('sel_val3', '정보 없음')
+        )
+    else:
+        return {"error": "데이터를 가져오는 데 실패했습니다."}
