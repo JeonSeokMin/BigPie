@@ -338,11 +338,13 @@ cached_passenger_data = None  # ✅ 캐싱된 데이터 저장 변수
 # 📌 특정 공항의 데이터 가져오기 (공항 코드: GMP, CJJ, CJU)
 def fetch_passenger_data_for_airport(airport_code):
     today = datetime.today().strftime('%Y%m%d')  # 🔹 오늘 날짜 자동 설정
+    current_hour = datetime.now().hour  # 현재 시(hour)만 추출
     
     url = 'http://openapi.airport.co.kr/service/rest/dailyExpectPassenger/dailyExpectPassenger'
     params = {
         'serviceKey': SERVICE_KEY_2,
         'schDate': today,
+        'schHH': f"{current_hour:02d}",  # 현재 시간에서 '시'만 넣기 (두 자릿수로 맞추기)
         'schAirport': airport_code  # ✅ 특정 공항 지정
     }
 
