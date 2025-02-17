@@ -138,12 +138,16 @@ def predict_flight_status(input_data: FlightInput):
 cached_forecast = None  # 🔄 캐싱된 출국장 혼잡도 데이터 저장 변수
 
 # ✅ 출국장 혼잡도 기준
-def determine_congestion_level(passenger_count, previous_levels):
-    if passenger_count >= 8600 or (passenger_count > 8200 and previous_levels[-2:] == ["ORANGE", "ORANGE"]):
+def determine_congestion_level(passenger_count, previous_counts):
+    if passenger_count >= 8600:
         return "RED"
     elif passenger_count > 8200:
+        if len(previous_counts) >= 2 and all(c > 8200 for c in previous_counts[-2:]):
+            return "RED"
         return "ORANGE"
     elif passenger_count > 7600:
+        if len(previous_counts) >= 2 and all(c > 7600 for c in previous_counts[-2:]):
+            return "RED"
         return "YELLOW"
     else:
         return "BLUE"
