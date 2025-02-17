@@ -9,6 +9,7 @@ import pandas as pd
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 
 # .env 파일 로드
 load_dotenv()
@@ -19,6 +20,15 @@ SERVICE_KEY_2 = os.getenv("SERVICE_KEY_2")
 
 # FastAPI 앱 생성
 app = FastAPI()
+
+# CORS 설정 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 모든 프론트엔드 요청 허용 (보안이 필요하면 특정 도메인만 허용)
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 HTTP 메서드 허용 (GET, POST, PUT, DELETE 등)
+    allow_headers=["*"],  # 모든 헤더 허용
+)
 
 ###########################################################################################################################################################
 ## 항공편 이륙 가능성 예측 ##
